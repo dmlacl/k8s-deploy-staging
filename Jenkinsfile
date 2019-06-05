@@ -43,6 +43,22 @@ pipeline {
         }
       }
     }
+    stage('DT Deploy Event') {
+  steps {
+    container("curl") {
+      script {
+        tagMatchRules[0].tags[0].value = "${env.APP_NAME}"
+        def status = pushDynatraceDeploymentEvent (
+          tagRule : tagMatchRules,
+          customProperties : [
+            [key: 'Jenkins Build Number', value: "${env.BUILD_ID}"],
+            [key: 'Git commit', value: "${env.GIT_COMMIT}"]
+          ]
+        )
+      }
+    }
+  }
+}
     // DO NOT uncomment until 06_04 Lab
     /*
     stage('DT Deploy Event') {
